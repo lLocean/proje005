@@ -54,10 +54,10 @@ canvas { display: block; outline: none; }
         max-width: 350px;
     }
 
-    /* 2. Buy Me a Coffee mobilde çok yer kaplamasın */
+    /* 2. Buy Me a Coffee mobilde çok yer kaplamasın 
     .fixed.bottom-4.right-4 {
         bottom: auto; top: 15px; right: 15px; transform: scale(0.7);
-    }
+    } */
 
     /* 3. İstatistikleri yukarı iyice çekelim */
     #stats-panel { top: 90px; }
