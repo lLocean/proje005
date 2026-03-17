@@ -6,122 +6,101 @@
     <title>Rubik Master AI - MVP</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="proje005.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 </head>
-<body>
+<body class="bg-black overflow-hidden">
 
-    <nav class="absolute top-0 w-full py-6 px-8 flex justify-between items-center z-10 bg-black/80 backdrop-blur-md border-b border-orange-500/50">
-        <h1 class="text-3xl font-black text-orange-400 tracking-widest drop-shadow-[0_0_12px_rgba(255,165,0,0.8)]">RUBIK MASTER</h1>
-        <div class="space-x-3 text-white flex items-center">
-            <button id="btn-mode-free" class="bg-orange-600 hover:bg-orange-500 px-5 py-2.5 rounded text-sm font-bold transition shadow-[0_0_10px_rgba(255,140,0,0.5)]" onclick="switchMode('free')">SERBEST MOD</button>
-            <button id="btn-mode-ai" class="bg-zinc-800 hover:bg-zinc-700 px-5 py-2.5 rounded text-sm font-bold transition" onclick="switchMode('ai')">AI ÇÖZÜCÜ</button>
-            <button id="btn-mode-guide" class="bg-zinc-800 hover:bg-zinc-700 px-5 py-2.5 rounded text-sm font-bold transition" onclick="switchMode('guide')">NASIL ÇÖZÜLÜR?</button>
+    <nav class="absolute top-0 w-full py-4 px-4 md:px-8 flex flex-col md:flex-row justify-between items-center z-50 bg-black/80 backdrop-blur-md border-b border-orange-500/50">
+        <h1 class="text-xl md:text-3xl font-black text-orange-400 tracking-widest drop-shadow-[0_0_12px_rgba(255,165,0,0.8)] mb-2 md:mb-0">RUBIK MASTER</h1>
+        <div class="flex gap-2 text-white items-center scale-90 md:scale-100">
+            <button id="btn-mode-free" class="bg-orange-600 hover:bg-orange-500 px-3 py-2 md:px-5 md:py-2.5 rounded text-[10px] md:text-sm font-bold transition shadow-[0_0_10px_rgba(255,140,0,0.5)]" onclick="switchMode('free')">SERBEST MOD</button>
+            <button id="btn-mode-ai" class="bg-zinc-800 hover:bg-zinc-700 px-3 py-2 md:px-5 md:py-2.5 rounded text-[10px] md:text-sm font-bold transition" onclick="switchMode('ai')">AI ÇÖZÜCÜ</button>
+            <button id="btn-mode-guide" class="bg-zinc-800 hover:bg-zinc-700 px-3 py-2 md:px-5 md:py-2.5 rounded text-[10px] md:text-sm font-bold transition" onclick="switchMode('guide')">REHBER</button>
         </div>
     </nav>
 
-    <div id="stats-panel" class="absolute top-28 left-1/2 transform -translate-x-1/2 flex gap-4 z-40 transition-opacity duration-300">
-        <div id="timer-display" class="text-4xl font-mono text-orange-400 font-bold bg-black/80 px-6 py-2 rounded-2xl border border-orange-500/50 shadow-[0_0_20px_rgba(255,165,0,0.3)] transition-colors duration-300">
+    <div id="stats-panel" class="absolute top-24 md:top-28 left-1/2 transform -translate-x-1/2 flex gap-2 md:gap-4 z-40 transition-opacity duration-300 scale-75 md:scale-100">
+        <div id="timer-display" class="text-2xl md:text-4xl font-mono text-orange-400 font-bold bg-black/80 px-4 py-2 rounded-2xl border border-orange-500/50 shadow-[0_0_20px_rgba(255,165,0,0.3)]">
             00:00.00
         </div>
-        <div id="moves-display" class="text-3xl font-mono text-cyan-400 font-bold bg-black/80 px-6 py-2 rounded-2xl border border-cyan-500/50 shadow-[0_0_20px_rgba(0,255,255,0.3)] flex items-center transition-colors duration-300">
+        <div id="moves-display" class="text-xl md:text-3xl font-mono text-cyan-400 font-bold bg-black/80 px-4 py-2 rounded-2xl border border-cyan-500/50 shadow-[0_0_20px_rgba(0,255,255,0.3)] flex items-center">
             HAMLE: 0
         </div>
     </div>
 
-    <div id="guide-screen" class="hidden-panel absolute top-32 left-1/2 transform -translate-x-1/2 w-11/12 max-w-5xl bg-black/90 border border-orange-500/50 p-8 rounded-2xl text-white z-50 flex gap-8 shadow-[0_0_40px_rgba(255,165,0,0.2)] backdrop-blur-lg">
-        <div class="w-2/3">
-            <h2 class="text-3xl text-orange-400 font-black mb-6 tracking-widest drop-shadow-[0_0_8px_rgba(255,165,0,0.6)]">ÇÖZÜM REHBERİ (CFOP METODU)</h2>
-            <div class="space-y-4 text-zinc-300">
-                <div class="bg-zinc-900/80 p-5 rounded-xl border border-zinc-700">
-                    <h3 class="text-lg font-bold text-cyan-400 mb-1">➕ 1. Cross (Beyaz Artı)</h3>
-                    <p class="text-sm">İlk adım, alt yüzeyde kenar parçalarını merkezlerle eşleştirerek artı oluşturmaktır.</p>
+    <div id="guide-screen" class="hidden-panel absolute top-32 left-1/2 transform -translate-x-1/2 w-11/12 max-w-5xl bg-black/95 border border-orange-500/50 p-4 md:p-8 rounded-2xl text-white z-50 flex flex-col md:flex-row gap-4 md:gap-8 shadow-[0_0_40px_rgba(255,165,0,0.2)] backdrop-blur-lg overflow-y-auto max-h-[70vh]">
+        <div class="md:w-2/3">
+            <h2 class="text-xl md:text-3xl text-orange-400 font-black mb-4 tracking-widest uppercase">Çözüm Rehberi</h2>
+            <div class="space-y-2 text-zinc-300">
+                <div class="bg-zinc-900/80 p-3 rounded-xl border border-zinc-700 text-xs md:text-sm">
+                    <h3 class="font-bold text-cyan-400">➕ 1. Cross (Beyaz Artı)</h3>
+                    <p>Alt yüzeyde kenar parçalarını merkezlerle eşleştirin.</p>
                 </div>
-                <div class="bg-zinc-900/80 p-5 rounded-xl border border-zinc-700">
-                    <h3 class="text-lg font-bold text-cyan-400 mb-1">🧱 2. F2L (First Two Layers)</h3>
-                    <p class="text-sm">Alt köşe ve orta kenar parçaları çiftler halinde yuvalarına yerleştirilir.</p>
-                </div>
-                <div class="bg-zinc-900/80 p-5 rounded-xl border border-zinc-700">
-                    <h3 class="text-lg font-bold text-cyan-400 mb-1">🟨 3. OLL (Orientation of Last Layer)</h3>
-                    <p class="text-sm">Üst katmandaki tüm parçaların sarı yüzeyleri yukarı bakacak şekilde çevrilir.</p>
-                </div>
-                <div class="bg-zinc-900/80 p-5 rounded-xl border border-zinc-700">
-                    <h3 class="text-lg font-bold text-cyan-400 mb-1">🎯 4. PLL (Permutation of Last Layer)</h3>
-                    <p class="text-sm">Sarı yüzey tamamlandıktan sonra, parçalar yer değiştirilerek küp çözülür.</p>
+                <div class="bg-zinc-900/80 p-3 rounded-xl border border-zinc-700 text-xs md:text-sm">
+                    <h3 class="font-bold text-cyan-400">🧱 2. F2L</h3>
+                    <p>İlk iki katmanı çiftler halinde yerleştirin.</p>
                 </div>
             </div>
         </div>
-        <div class="w-1/3 bg-orange-900/20 p-6 rounded-2xl border border-orange-500/50 flex flex-col relative overflow-hidden">
-            <h3 class="text-xl font-black text-orange-400 mb-6 text-center tracking-wider">💡 BUNLARI BİLİYOR MUYDUNUZ?</h3>
-            <ul class="space-y-6 text-sm text-zinc-300 relative z-10">
-                <li class="flex gap-3 items-start"><span class="text-orange-500">🔸</span> <span>Rubik Küpü'nün tam <b>43 Kentilyon</b> farklı renk kombinasyonu vardır!</span></li>
-                <li class="flex gap-3 items-start"><span class="text-orange-500">🔸</span> <span>Bilgisayarlar <b>"Kociemba Metodu"</b> ile küpü maksimum <b>20 hamlede</b> (God's Number) çözer.</span></li>
-                <li class="flex gap-3 items-start"><span class="text-orange-500">🔸</span> <span>Dünya rekoru kıranlar makine gibi değil, <b>CFOP</b> adı verilen kas hafızası yöntemiyle çözerler.</span></li>
-            </ul>
+        <div class="md:w-1/3 bg-orange-900/20 p-4 rounded-2xl border border-orange-500/50">
+            <h3 class="text-lg font-black text-orange-400 mb-2">💡 BİLGİ</h3>
+            <p class="text-[10px] md:text-xs text-zinc-300">Rubik Küpü'nün 43 kentilyon kombinasyonu vardır!</p>
         </div>
     </div>
 
-    <div id="arrow-panel" class="control-panel absolute top-1/2 transform -translate-y-1/2 left-10 w-48">
-        <p class="text-center text-xs text-orange-300 font-bold mb-2 tracking-widest">KÜPÜ ÇEVİR</p>
-        <p class="text-center text-[10px] text-zinc-400 mb-4">(W,A,S,D veya Ok Tuşları)</p>
-        <div class="grid grid-cols-3 gap-3 text-center place-items-center">
+    <div id="arrow-panel" class="control-panel absolute z-40">
+        <p class="text-center text-[10px] text-orange-300 font-bold mb-1 uppercase">Küpü Çevir</p>
+        <div class="grid grid-cols-3 gap-2 place-items-center">
             <div></div><button class="cmd-btn" onclick="rotateWholeCube('x', 1)">⬆️</button><div></div>
             <button class="cmd-btn" onclick="rotateWholeCube('y', 1)">⬅️</button><button class="cmd-btn" onclick="rotateWholeCube('z', 1)">🔃</button><button class="cmd-btn" onclick="rotateWholeCube('y', -1)">➡️</button>
             <div></div><button class="cmd-btn" onclick="rotateWholeCube('x', -1)">⬇️</button><div></div>
         </div>
     </div>
 
-    <div id="algo-panel" class="control-panel absolute top-1/2 transform -translate-y-1/2 right-10 w-[280px]">
-        <p class="text-center text-xs text-orange-300 font-bold mb-4 tracking-widest">ALGORİTMALAR</p>
-        <div class="grid grid-cols-4 gap-2 place-items-center">
-            <button class="cmd-btn w-full" onclick="rotateLayer('U')">U</button><button class="cmd-btn w-full" onclick="rotateLayer('U_PRIME')">U'</button><button class="cmd-btn w-full" onclick="rotateLayer('D')">D</button><button class="cmd-btn w-full" onclick="rotateLayer('D_PRIME')">D'</button>
-            <button class="cmd-btn w-full" onclick="rotateLayer('R')">R</button><button class="cmd-btn w-full" onclick="rotateLayer('R_PRIME')">R'</button><button class="cmd-btn w-full" onclick="rotateLayer('L')">L</button><button class="cmd-btn w-full" onclick="rotateLayer('L_PRIME')">L'</button>
-            <button class="cmd-btn w-full" onclick="rotateLayer('F')">F</button><button class="cmd-btn w-full" onclick="rotateLayer('F_PRIME')">F'</button><button class="cmd-btn w-full" onclick="rotateLayer('B')">B</button><button class="cmd-btn w-full" onclick="rotateLayer('B_PRIME')">B'</button>
-            <div style="grid-column: span 4; margin-top: 10px; width: 100%; display: flex; gap: 8px;">
-                <button class="w-1/2 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded font-bold transition text-xs tracking-wider" onclick="scrambleCube()">🔀 KARIŞTIR</button>
-                <button class="w-1/2 py-3 bg-red-600 hover:bg-red-500 text-white rounded font-bold transition text-xs tracking-wider" onclick="resetCube()">🔄 SIFIRLA</button>
+    <div id="algo-panel" class="control-panel absolute z-40">
+        <p class="text-center text-[10px] text-orange-300 font-bold mb-2 uppercase tracking-widest">Algoritmalar</p>
+        <div class="grid grid-cols-4 gap-1.5 md:gap-2">
+            <button class="cmd-btn" onclick="rotateLayer('U')">U</button><button class="cmd-btn" onclick="rotateLayer('U_PRIME')">U'</button><button class="cmd-btn" onclick="rotateLayer('D')">D</button><button class="cmd-btn" onclick="rotateLayer('D_PRIME')">D'</button>
+            <button class="cmd-btn" onclick="rotateLayer('R')">R</button><button class="cmd-btn" onclick="rotateLayer('R_PRIME')">R'</button><button class="cmd-btn" onclick="rotateLayer('L')">L</button><button class="cmd-btn" onclick="rotateLayer('L_PRIME')">L'</button>
+            <button class="cmd-btn" onclick="rotateLayer('F')">F</button><button class="cmd-btn" onclick="rotateLayer('F_PRIME')">F'</button><button class="cmd-btn" onclick="rotateLayer('B')">B</button><button class="cmd-btn" onclick="rotateLayer('B_PRIME')">B'</button>
+        </div>
+        <div class="flex gap-2 mt-3">
+            <button class="flex-1 py-2 bg-indigo-600 text-[10px] text-white rounded font-bold" onclick="scrambleCube()">🔀 KARIŞTIR</button>
+            <button class="flex-1 py-2 bg-red-600 text-[10px] text-white rounded font-bold" onclick="resetCube()">🔄 SIFIRLA</button>
+        </div>
+    </div>
+
+    <div id="color-picker" class="hidden-panel control-panel absolute z-40">
+        <p class="text-center text-[10px] text-orange-300 font-bold mb-2">RENK SEÇİCİ</p>
+        <div class="grid grid-cols-3 gap-3 place-items-center mb-3">
+            <button class="color-btn bg-[#ffffff]" onclick="setSelectedColor('#ffffff', this)"></button>
+            <button class="color-btn bg-[#ffff00]" onclick="setSelectedColor('#ffff00', this)"></button>
+            <button class="color-btn bg-[#00ff00]" onclick="setSelectedColor('#00ff00', this)"></button>
+            <button class="color-btn bg-[#0000ff]" onclick="setSelectedColor('#0000ff', this)"></button>
+            <button class="color-btn bg-[#ff0000]" onclick="setSelectedColor('#ff0000', this)"></button>
+            <button class="color-btn bg-[#ffa500]" onclick="setSelectedColor('#ffa500', this)"></button>
+        </div>
+        <button class="w-full py-2 bg-green-600 text-white rounded font-bold text-[10px]" onclick="scanCube()">👁️ TARA VE ÇÖZ</button>
+    </div>
+
+    <div id="solution-panel" class="hidden-panel absolute bottom-4 md:bottom-6 left-1/2 transform -translate-x-1/2 bg-black/90 border border-zinc-700 p-4 rounded-2xl z-50 w-[95%] max-w-3xl">
+        <div class="flex justify-between items-center mb-2">
+            <span class="text-cyan-400 font-bold text-[10px]">🤖 AI ROTASI</span>
+            <div class="flex gap-1 scale-75 origin-right">
+                <button id="btn-speed-normal" class="bg-orange-600 px-2 py-1 rounded-full text-white text-[8px]" onclick="setSpeed('normal')">🐇 HIZLI</button>
+                <button id="btn-speed-slow" class="bg-zinc-800 px-2 py-1 rounded-full text-zinc-300 text-[8px]" onclick="setSpeed('slow')">🐢 YAVAŞ</button>
             </div>
         </div>
-    </div>
-
-    <div id="color-picker" class="hidden-panel control-panel absolute top-1/2 transform -translate-y-1/2 right-10 w-[280px]">
-        <p class="text-center text-xs text-orange-300 font-bold mb-4 tracking-widest">RENK SEÇİCİ</p>
-        <div class="grid grid-cols-3 gap-4 place-items-center mb-4 mt-2">
-            <button class="color-btn bg-[#ffffff]" onclick="setSelectedColor('#ffffff', this)">1</button>
-            <button class="color-btn bg-[#ffff00]" onclick="setSelectedColor('#ffff00', this)">2</button>
-            <button class="color-btn bg-[#00ff00]" onclick="setSelectedColor('#00ff00', this)">3</button>
-            <button class="color-btn bg-[#0000ff]" onclick="setSelectedColor('#0000ff', this)">4</button>
-            <button class="color-btn bg-[#ff0000]" onclick="setSelectedColor('#ff0000', this)">5</button>
-            <button class="color-btn bg-[#ffa500]" onclick="setSelectedColor('#ffa500', this)">6</button>
-        </div>
-        <p class="text-center text-[10px] text-zinc-400 mt-2 mb-4">Küpün üzerine tıklayarak boyayın.</p>
-        <button class="w-full py-3 bg-green-600 hover:bg-green-500 text-white rounded font-bold transition text-xs tracking-wider shadow-[0_0_15px_rgba(0,255,0,0.4)]" onclick="scanCube()">👁️ KÜPÜ TARA VE ANALİZ ET</button>
-    </div>
-
-    <div id="solution-panel" class="hidden-panel absolute bottom-6 left-1/2 transform -translate-x-1/2 bg-black/85 backdrop-blur-md border border-zinc-700 p-4 rounded-2xl text-center z-50 w-11/12 max-w-3xl shadow-[0_0_30px_rgba(0,0,0,0.9)]">
-        
-        <div class="flex justify-between items-center mb-3 px-2">
-            <span class="text-cyan-400 font-bold text-xs tracking-widest flex items-center gap-2">🤖 GERÇEK AI KOCIEMBA ROTASI</span>
-            <div class="flex gap-2">
-                <button id="btn-speed-normal" class="bg-orange-600 px-3 py-1 rounded-full font-bold text-white text-[10px] transition" onclick="setSpeed('normal')">🐇 NORMAL HIZ</button>
-                <button id="btn-speed-slow" class="bg-zinc-800 hover:bg-zinc-700 px-3 py-1 rounded-full font-bold text-zinc-300 text-[10px] transition" onclick="setSpeed('slow')">🐢 YAVAŞ (EĞİTİM)</button>
-            </div>
-        </div>
-
-        <div id="solution-moves" class="flex flex-wrap justify-center content-start gap-1.5 mb-4 p-2 h-[100px] overflow-y-auto">
-</div>
-        
-        <div class="flex justify-center gap-3">
-            <button class="bg-zinc-800 hover:bg-zinc-700 px-5 py-2 rounded-lg font-bold text-zinc-300 text-xs transition" onclick="goToState(0)">⏪ BAŞA SAR</button>
-            <button class="bg-zinc-800 hover:bg-zinc-700 px-5 py-2 rounded-lg font-bold text-zinc-300 text-xs transition" onclick="pauseSolution()">⏸️ DURAKLAT</button>
-            <button class="bg-green-600 hover:bg-green-500 px-8 py-2 rounded-lg font-bold text-white text-xs transition shadow-[0_0_15px_rgba(0,255,0,0.3)]" onclick="playSolution()">▶️ OYNAT</button>
-            <button class="bg-red-600/20 hover:bg-red-600/40 text-red-400 border border-red-500/30 px-4 py-2 rounded-lg font-bold text-xs transition" onclick="closeSolution()">KAPAT</button>
+        <div id="solution-moves" class="flex flex-wrap justify-center gap-1 mb-3 max-h-20 overflow-y-auto"></div>
+        <div class="flex justify-center gap-2 scale-90">
+            <button class="bg-zinc-800 px-3 py-1 rounded font-bold text-white text-[10px]" onclick="goToState(0)">⏪ BAŞA</button>
+            <button class="bg-green-600 px-5 py-1 rounded font-bold text-white text-[10px]" onclick="playSolution()">▶️ OYNAT</button>
+            <button class="bg-red-900/40 px-3 py-1 rounded font-bold text-red-400 text-[10px]" onclick="closeSolution()">X</button>
         </div>
     </div>
 
-    <div id="loading-screen" class="hidden-panel absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-black/90 border border-yellow-500/50 p-8 rounded-2xl text-center z-50 shadow-[0_0_40px_rgba(234,179,8,0.3)] backdrop-blur-md">
-        <div class="text-4xl mb-4 animate-spin">⏳</div>
-        <h2 id="loading-title" class="text-xl text-yellow-400 font-bold tracking-widest animate-pulse">GERÇEK AI ANALİZ EDİYOR</h2>
-        <p id="loading-desc" class="text-zinc-400 mt-2 text-sm">Dünya rekoru Kociemba algoritması çalışıyor...</p>
+    <div id="loading-screen" class="hidden-panel absolute inset-0 bg-black/90 flex flex-col items-center justify-center z-[100]">
+        <div class="text-4xl mb-4 animate-spin text-orange-500">⏳</div>
+        <h2 id="loading-title" class="text-orange-400 font-bold tracking-widest">ANALİZ EDİLİYOR...</h2>
     </div>
 
     <script type="importmap">
@@ -132,12 +111,12 @@
                 "@tweenjs/tween.js": "https://unpkg.com/@tweenjs/tween.js@23.1.1/dist/tween.esm.js"
             }
         }
-        
     </script>
     <script type="module" src="proje005.js"></script>
-    <div style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;">
+
+    <div class="fixed bottom-4 right-4 z-[60] scale-75 md:scale-100">
         <a href="https://www.buymeacoffee.com/KULLANICI_ADIN" target="_blank">
-            <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 50px !important;width: 180px !important;" >
+            <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" class="h-10 md:h-12 w-auto shadow-lg rounded-xl">
         </a>
     </div>
 </body>
