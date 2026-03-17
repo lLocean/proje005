@@ -46,35 +46,12 @@ canvas { display: block; outline: none; }
     gap: 6px;
 }
 
-/* --- MOBİL UYUMLULUK AYARLARI --- */
-@media (max-width: 768px) {
-    /* Yan panelleri (Sol ve Sağ) küpün altına, yan yana dizelim */
-    #algo-panel, #color-picker {
-        top: auto !important;
-        bottom: 120px !important; /* Alt barın üstünde dursunlar */
-        left: 50% !important;
-        transform: translateX(-50%) !important;
-        width: 90% !important;
-        max-width: 350px;
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        background: rgba(10, 10, 10, 0.9); /* Arkayı biraz daha koyu yapalım ki küp karışmasın */
+@media (max-width: 600px) {
+    button {
+        padding: 10px 15px; /* Mobilde butonları biraz küçültür */
+        font-size: 14px;
     }
-
-    #color-picker {
-        bottom: 180px !important; /* Renk seçiciyi biraz daha yukarı alalım */
+    #canvas-container {
+        height: 70vh; /* Küpün ekrana sığması için alan açar */
     }
-
-    /* Alt paneli (Algoritma Barı) daha küçük yapalım */
-    #solution-panel {
-        width: 95% !important;
-        left: 2.5% !important;
-        bottom: 10px !important;
-        padding: 10px !important;
-    }
-
-    /* Yazıları ve butonları mobilde küçültelim */
-    .text-sm { font-size: 0.75rem !important; }
-    button { padding: 5px 10px !important; }
 }

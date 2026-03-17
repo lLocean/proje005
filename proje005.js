@@ -4,6 +4,9 @@ import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.j
 import * as TWEEN from '@tweenjs/tween.js';
 import Cube from 'https://cdn.skypack.dev/cubejs';
 
+const turnSound = new Audio('https://gfxsounds.com/wp-content/uploads/2021/03/Rubiks-cube-rotating-solving-2.mp3');
+turnSound.volume = 0.5; // Ses seviyesi (0.0 ile 1.0 arası)
+
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x0a0a0a);
 
@@ -264,6 +267,9 @@ window.rotateLayer = async (move, record = true, customDuration = 300, isAbsolut
     if (isAnimating && record) return; 
     if (isScrambled && !isTimerRunning && record) startTimer(); 
     
+    turnSound.currentTime = 0; // Sesi başa sar (hızlı hamlelerde üst üste binmesi için)
+turnSound.play();
+
     const { activePieces, axis, angle } = getMoveData(move, isAbsolute);
     if (activePieces.length > 0) {
         if (record) isAnimating = true;
