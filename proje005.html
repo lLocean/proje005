@@ -6,6 +6,7 @@
     <title>Rubik Master AI - MVP</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="proje005.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 </head>
 <body>
 
@@ -85,12 +86,12 @@
     <div id="color-picker" class="hidden-panel control-panel absolute top-1/2 transform -translate-y-1/2 right-10 w-[280px]">
         <p class="text-center text-xs text-orange-300 font-bold mb-4 tracking-widest">RENK SEÇİCİ</p>
         <div class="grid grid-cols-3 gap-4 place-items-center mb-4 mt-2">
-            <button class="color-btn bg-[#ffffff]" onclick="setSelectedColor('#ffffff', this)"></button>
-            <button class="color-btn bg-[#ffff00]" onclick="setSelectedColor('#ffff00', this)"></button>
-            <button class="color-btn bg-[#00ff00]" onclick="setSelectedColor('#00ff00', this)"></button>
-            <button class="color-btn bg-[#0000ff]" onclick="setSelectedColor('#0000ff', this)"></button>
-            <button class="color-btn bg-[#ff0000]" onclick="setSelectedColor('#ff0000', this)"></button>
-            <button class="color-btn bg-[#ffa500]" onclick="setSelectedColor('#ffa500', this)"></button>
+            <button class="color-btn bg-[#ffffff]" onclick="setSelectedColor('#ffffff', this)">1</button>
+            <button class="color-btn bg-[#ffff00]" onclick="setSelectedColor('#ffff00', this)">2</button>
+            <button class="color-btn bg-[#00ff00]" onclick="setSelectedColor('#00ff00', this)">3</button>
+            <button class="color-btn bg-[#0000ff]" onclick="setSelectedColor('#0000ff', this)">4</button>
+            <button class="color-btn bg-[#ff0000]" onclick="setSelectedColor('#ff0000', this)">5</button>
+            <button class="color-btn bg-[#ffa500]" onclick="setSelectedColor('#ffa500', this)">6</button>
         </div>
         <p class="text-center text-[10px] text-zinc-400 mt-2 mb-4">Küpün üzerine tıklayarak boyayın.</p>
         <button class="w-full py-3 bg-green-600 hover:bg-green-500 text-white rounded font-bold transition text-xs tracking-wider shadow-[0_0_15px_rgba(0,255,0,0.4)]" onclick="scanCube()">👁️ KÜPÜ TARA VE ANALİZ ET</button>
@@ -106,8 +107,8 @@
             </div>
         </div>
 
-        <div id="solution-moves" class="flex flex-wrap justify-center gap-1.5 mb-4 p-2 min-h-[40px]">
-            </div>
+        <div id="solution-moves" class="flex flex-wrap justify-center content-start gap-1.5 mb-4 p-2 h-[100px] overflow-y-auto">
+</div>
         
         <div class="flex justify-center gap-3">
             <button class="bg-zinc-800 hover:bg-zinc-700 px-5 py-2 rounded-lg font-bold text-zinc-300 text-xs transition" onclick="goToState(0)">⏪ BAŞA SAR</button>

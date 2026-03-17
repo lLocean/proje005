@@ -34,3 +34,47 @@ canvas { display: block; outline: none; }
 }
 .color-btn:hover { transform: scale(1.15); }
 .color-btn.active { border-color: white; transform: scale(1.2); box-shadow: 0 0 15px white; }
+
+/* Çözüm panelindeki hamlelerin kutusu zıplamasın diye */
+#solution-moves {
+    max-height: 120px; /* Sabit yükseklik */
+    overflow-y: auto;  /* Fazla hamle gelirse içinde kaydır */
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start; /* İçeriği yukarı yasla */
+    padding: 10px;
+    gap: 6px;
+}
+
+/* --- MOBİL UYUMLULUK AYARLARI --- */
+@media (max-width: 768px) {
+    /* Yan panelleri (Sol ve Sağ) küpün altına, yan yana dizelim */
+    #algo-panel, #color-picker {
+        top: auto !important;
+        bottom: 120px !important; /* Alt barın üstünde dursunlar */
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        width: 90% !important;
+        max-width: 350px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        background: rgba(10, 10, 10, 0.9); /* Arkayı biraz daha koyu yapalım ki küp karışmasın */
+    }
+
+    #color-picker {
+        bottom: 180px !important; /* Renk seçiciyi biraz daha yukarı alalım */
+    }
+
+    /* Alt paneli (Algoritma Barı) daha küçük yapalım */
+    #solution-panel {
+        width: 95% !important;
+        left: 2.5% !important;
+        bottom: 10px !important;
+        padding: 10px !important;
+    }
+
+    /* Yazıları ve butonları mobilde küçültelim */
+    .text-sm { font-size: 0.75rem !important; }
+    button { padding: 5px 10px !important; }
+}

@@ -2,7 +2,6 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 import * as TWEEN from '@tweenjs/tween.js';
-// YENİ: Tarayıcıya uyumlu güvenli Kociemba Kütüphanesi!
 import Cube from 'https://cdn.skypack.dev/cubejs';
 
 const scene = new THREE.Scene();
@@ -79,16 +78,13 @@ function shiftCameraUp() {
     new TWEEN.Tween(controls.target).to({ y: -1.5 }, 800).easing(TWEEN.Easing.Cubic.Out).start();
     new TWEEN.Tween(camera.position).to({ y: camera.position.y + 1.5 }, 800).easing(TWEEN.Easing.Cubic.Out).start();
 }
-
 function shiftCameraCenter() {
     new TWEEN.Tween(controls.target).to({ y: 0 }, 800).easing(TWEEN.Easing.Cubic.Out).start();
     new TWEEN.Tween(camera.position).to({ y: 3.5 }, 800).easing(TWEEN.Easing.Cubic.Out).start();
 }
-
 function updateMoveCounter() {
     document.getElementById('moves-display').innerText = `HAMLE: ${moveCount}`;
 }
-
 function startTimer() {
     if (isTimerRunning || !isScrambled) return;
     isTimerRunning = true;
@@ -101,12 +97,10 @@ function startTimer() {
         document.getElementById('timer-display').innerText = `${m}:${s}.${ms}`;
     }, 10);
 }
-
 function stopTimer() {
     isTimerRunning = false;
     clearInterval(timerInterval);
 }
-
 function resetStats() {
     stopTimer();
     isScrambled = false;
@@ -142,7 +136,6 @@ function checkIsSolved() {
             }
         });
     });
-
     for (let face in faces) {
         if (faces[face].length !== 9) return false; 
         const firstColor = faces[face][0];
@@ -163,89 +156,39 @@ window.resetCube = () => {
     shiftCameraCenter(); 
 };
 
-window.scrambleCube = async () => {
-    if (isAnimating) return;
-    isAnimating = true; 
-    resetStats(); 
-    shiftCameraCenter();
-    
-    const possibleMoves = ['U', 'U_PRIME', 'D', 'D_PRIME', 'L', 'L_PRIME', 'R', 'R_PRIME', 'F', 'F_PRIME', 'B', 'B_PRIME'];
-    
-    for(let i = 0; i < 20; i++) {
-        const randomMove = possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
-        const { activePieces, axis, angle } = getMoveData(randomMove);
-        if (activePieces.length > 0) {
-            await animateRotation(activePieces, axis, angle, 60, false); 
-        }
-    }
-    isAnimating = false;
-    isScrambled = true; 
-};
-
-let currentMode = 'free'; 
-window.switchMode = (mode) => {
-    currentMode = mode;
-    document.getElementById('btn-mode-free').className = mode === 'free' ? "bg-orange-600 hover:bg-orange-500 px-5 py-2.5 rounded text-sm font-bold transition shadow-[0_0_10px_rgba(255,140,0,0.5)]" : "bg-zinc-800 hover:bg-zinc-700 px-5 py-2.5 rounded text-sm font-bold transition";
-    document.getElementById('btn-mode-ai').className = mode === 'ai' ? "bg-orange-600 hover:bg-orange-500 px-5 py-2.5 rounded text-sm font-bold transition shadow-[0_0_10px_rgba(255,140,0,0.5)]" : "bg-zinc-800 hover:bg-zinc-700 px-5 py-2.5 rounded text-sm font-bold transition";
-    document.getElementById('btn-mode-guide').className = mode === 'guide' ? "bg-orange-600 hover:bg-orange-500 px-5 py-2.5 rounded text-sm font-bold transition shadow-[0_0_10px_rgba(255,140,0,0.5)]" : "bg-zinc-800 hover:bg-zinc-700 px-5 py-2.5 rounded text-sm font-bold transition";
-
-    document.getElementById('algo-panel').classList.add('hidden-panel');
-    document.getElementById('color-picker').classList.add('hidden-panel');
-    document.getElementById('guide-screen').classList.add('hidden-panel');
-    document.getElementById('solution-panel').classList.add('hidden-panel');
-    
-    shiftCameraCenter(); 
-
-    const statsPanel = document.getElementById('stats-panel');
-    if (mode === 'free') {
-        document.getElementById('algo-panel').classList.remove('hidden-panel');
-        document.getElementById('arrow-panel').classList.remove('hidden-panel');
-        statsPanel.style.opacity = '1';
-        cubeGroup.visible = true;
-    } else if (mode === 'ai') {
-        document.getElementById('color-picker').classList.remove('hidden-panel');
-        document.getElementById('arrow-panel').classList.remove('hidden-panel');
-        statsPanel.style.opacity = '0'; 
-        cubeGroup.visible = true;
-    } else if (mode === 'guide') {
-        document.getElementById('guide-screen').classList.remove('hidden-panel');
-        document.getElementById('arrow-panel').classList.add('hidden-panel');
-        statsPanel.style.opacity = '0';
-        cubeGroup.visible = false;
-    }
-};
-
-function animateRotation(piecesArray, axisStr, angle, duration = 300, countMove = true) {
+function animateRotation(piecesArray, axisStr, angle, duration = 300, recordStats = true) {
     return new Promise((resolve) => {
-        if (duration <= 10) {
-            const pivot = new THREE.Group();
-            scene.add(pivot);
-            piecesArray.forEach(p => pivot.attach(p));
-            pivot.rotation[axisStr] = angle;
-            piecesArray.forEach(p => {
-                cubeGroup.attach(p);
-                p.position.set(Math.round(p.position.x), Math.round(p.position.y), Math.round(p.position.z));
-            });
-            scene.remove(pivot);
-            resolve();
-            return;
-        }
+        const currentEasing = duration < 200 ? TWEEN.Easing.Linear.None : TWEEN.Easing.Quadratic.Out;
 
         const pivot = new THREE.Group();
         scene.add(pivot);
         piecesArray.forEach(p => pivot.attach(p));
 
-        new TWEEN.Tween({ rot: 0 }).to({ rot: angle }, duration).easing(TWEEN.Easing.Quadratic.InOut)
+        new TWEEN.Tween({ rot: 0 })
+            .to({ rot: angle }, duration)
+            .easing(currentEasing) 
             .onUpdate((obj) => { pivot.rotation[axisStr] = obj.rot; })
             .onComplete(() => {
+                // KESİN ÇÖZÜM BURADA: TWEEN 89.9 derecede dursa bile, biz onu zorla tam açıya (angle) kitliyoruz!
+                pivot.rotation[axisStr] = angle;
+                pivot.updateMatrixWorld(); // Fiziği zorla güncelle
+
                 piecesArray.forEach(p => {
                     cubeGroup.attach(p);
-                    // MANYETİK KİLİT (KÜPÜN KAYMASINI ENGELLER!)
-                    p.position.set(Math.round(p.position.x), Math.round(p.position.y), Math.round(p.position.z));
+                    p.position.x = Math.round(p.position.x);
+                    p.position.y = Math.round(p.position.y);
+                    p.position.z = Math.round(p.position.z);
+                    
+                    const euler = new THREE.Euler().setFromQuaternion(p.quaternion);
+                    const halfPi = Math.PI / 2;
+                    euler.x = Math.round(euler.x / halfPi) * halfPi;
+                    euler.y = Math.round(euler.y / halfPi) * halfPi;
+                    euler.z = Math.round(euler.z / halfPi) * halfPi;
+                    p.quaternion.setFromEuler(euler);
                 });
                 scene.remove(pivot);
                 
-                if (countMove && currentMode === 'free') {
+                if (recordStats && currentMode === 'free') {
                     moveCount++;
                     updateMoveCounter();
                 }
@@ -265,14 +208,25 @@ function animateRotation(piecesArray, axisStr, angle, duration = 300, countMove 
     });
 }
 
-function getMoveData(move) {
+// KRİTİK DÜZELTME: isAbsolute parametresi eklendi. AI için mutlak, kullanıcı için kameraya göre yön bulur.
+function getMoveData(move, isAbsolute = false) {
     const isPrime = move.includes('PRIME');
     const isDouble = move.includes('2'); 
     const type = move.replace('_PRIME', '').replace('2', '');
 
-    const camFront = new THREE.Vector3(0,0,-1).applyQuaternion(camera.quaternion).negate().normalize();
-    const camUp = new THREE.Vector3(0,1,0).applyQuaternion(camera.quaternion).normalize();
-    const camRight = new THREE.Vector3().crossVectors(camUp, camFront).normalize();
+    let camFront, camUp, camRight;
+    
+    if (isAbsolute) {
+        // AI ÇÖZÜCÜSÜ İÇİN SABİT YÖNLER (Kameranın nerede olduğu önemsizdir)
+        camFront = new THREE.Vector3(0, 0, 1); // Ön her zaman +Z
+        camUp = new THREE.Vector3(0, 1, 0);    // Üst her zaman +Y
+        camRight = new THREE.Vector3(1, 0, 0); // Sağ her zaman +X
+    } else {
+        // KULLANICI İÇİN KAMERAYA GÖRE YÖNLER
+        camFront = new THREE.Vector3(0,0,-1).applyQuaternion(camera.quaternion).negate().normalize();
+        camUp = new THREE.Vector3(0,1,0).applyQuaternion(camera.quaternion).normalize();
+        camRight = new THREE.Vector3().crossVectors(camUp, camFront).normalize();
+    }
 
     function getAxisAndDir(vec) {
         const ax = Math.abs(vec.x), ay = Math.abs(vec.y), az = Math.abs(vec.z);
@@ -306,16 +260,31 @@ function getMoveData(move) {
     return { activePieces, axis, angle };
 }
 
-window.rotateLayer = async (move, record = true, customDuration = 300) => {
-    if (isAnimating && customDuration > 10) return; 
-    if (isScrambled && !isTimerRunning) startTimer(); 
-    if (customDuration > 10) isAnimating = true;
-
-    const { activePieces, axis, angle } = getMoveData(move);
+window.rotateLayer = async (move, record = true, customDuration = 300, isAbsolute = false) => {
+    if (isAnimating && record) return; 
+    if (isScrambled && !isTimerRunning && record) startTimer(); 
+    
+    const { activePieces, axis, angle } = getMoveData(move, isAbsolute);
     if (activePieces.length > 0) {
+        if (record) isAnimating = true;
         await animateRotation(activePieces, axis, angle, customDuration, record);
+        if (record) isAnimating = false;
     }
-    if (customDuration > 10) isAnimating = false;
+};
+
+window.scrambleCube = async () => {
+    if (isAnimating) return;
+    isAnimating = true; 
+    resetStats(); 
+    shiftCameraCenter();
+    const possibleMoves = ['U', 'U_PRIME', 'D', 'D_PRIME', 'L', 'L_PRIME', 'R', 'R_PRIME', 'F', 'F_PRIME', 'B', 'B_PRIME'];
+    
+    for(let i = 0; i < 20; i++) {
+        const randomMove = possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
+        await window.rotateLayer(randomMove, false, 120, true); // Karıştırma mutlak yönlere göre olsun
+    }
+    isAnimating = false;
+    isScrambled = true; 
 };
 
 window.rotateWholeCube = async (axisStr, dir) => {
@@ -323,6 +292,40 @@ window.rotateWholeCube = async (axisStr, dir) => {
     isAnimating = true;
     await animateRotation([...cubeGroup.children], axisStr, dir * (Math.PI / 2), 300, false); 
     isAnimating = false;
+};
+
+let currentMode = 'free'; 
+window.switchMode = (mode) => {
+    resetStats(); 
+    currentMode = mode;
+    document.getElementById('btn-mode-free').className = mode === 'free' ? "bg-orange-600 hover:bg-orange-500 px-5 py-2.5 rounded text-sm font-bold transition shadow-[0_0_10px_rgba(255,140,0,0.5)]" : "bg-zinc-800 hover:bg-zinc-700 px-5 py-2.5 rounded text-sm font-bold transition";
+    document.getElementById('btn-mode-ai').className = mode === 'ai' ? "bg-orange-600 hover:bg-orange-500 px-5 py-2.5 rounded text-sm font-bold transition shadow-[0_0_10px_rgba(255,140,0,0.5)]" : "bg-zinc-800 hover:bg-zinc-700 px-5 py-2.5 rounded text-sm font-bold transition";
+    document.getElementById('btn-mode-guide').className = mode === 'guide' ? "bg-orange-600 hover:bg-orange-500 px-5 py-2.5 rounded text-sm font-bold transition shadow-[0_0_10px_rgba(255,140,0,0.5)]" : "bg-zinc-800 hover:bg-zinc-700 px-5 py-2.5 rounded text-sm font-bold transition";
+
+    document.getElementById('algo-panel').classList.add('hidden-panel');
+    document.getElementById('color-picker').classList.add('hidden-panel');
+    document.getElementById('guide-screen').classList.add('hidden-panel');
+    document.getElementById('solution-panel').classList.add('hidden-panel');
+    
+    shiftCameraCenter(); 
+
+    const statsPanel = document.getElementById('stats-panel');
+    if (mode === 'free') {
+        document.getElementById('algo-panel').classList.remove('hidden-panel');
+        document.getElementById('arrow-panel').classList.remove('hidden-panel');
+        statsPanel.style.opacity = '1';
+        cubeGroup.visible = true;
+    } else if (mode === 'ai') {
+        document.getElementById('color-picker').classList.remove('hidden-panel');
+        document.getElementById('arrow-panel').classList.remove('hidden-panel');
+        statsPanel.style.opacity = '0'; 
+        cubeGroup.visible = true;
+    } else if (mode === 'guide') {
+        document.getElementById('guide-screen').classList.remove('hidden-panel');
+        document.getElementById('arrow-panel').classList.add('hidden-panel');
+        statsPanel.style.opacity = '0';
+        cubeGroup.visible = false;
+    }
 };
 
 window.addEventListener('keydown', (e) => {
@@ -333,49 +336,41 @@ window.addEventListener('keydown', (e) => {
         case 'ArrowLeft': case 'a': case 'A': window.rotateWholeCube('y', 1); break;
         case 'ArrowRight': case 'd': case 'D': window.rotateWholeCube('y', -1); break;
     }
+    if (currentMode === 'ai') {
+        const colorMap = { '1': '#ffffff', '2': '#ffff00', '3': '#00ff00', '4': '#0000ff', '5': '#ff0000', '6': '#ffa500' };
+        if (colorMap[e.key]) {
+            const btns = document.querySelectorAll('#color-picker button');
+            const index = parseInt(e.key) - 1;
+            if(btns[index]) window.setSelectedColor(colorMap[e.key], btns[index]);
+        }
+    }
 });
 
-// --- GERÇEK KOCIEMBA ALGORİTMASI ---
-
+// ==========================================
+// 🤖 KOCIEMBA (KUSURSUZ TARAMA)
+// ==========================================
 window.scanCube = async () => {
     if (isAnimating || window.isSolutionPlaying) return;
 
-    const colorCounts = { 0xffffff: 0, 0xffff00: 0, 0x00ff00: 0, 0x0000ff: 0, 0xff0000: 0, 0xffa500: 0 };
-    const colorNames = { 0xffffff: 'Beyaz', 0xffff00: 'Sarı', 0x00ff00: 'Yeşil', 0x0000ff: 'Mavi', 0xff0000: 'Kırmızı', 0xffa500: 'Turuncu' };
-    const oppositePairs = [ [0xffffff, 0xffff00], [0x00ff00, 0x0000ff], [0xff0000, 0xffa500] ];
-    let pieceError = null;
-
-    cubeGroup.children.forEach(pieceGroup => {
-        const pieceColors = []; 
-        pieceGroup.children.forEach(mesh => {
-            if (mesh.material && mesh.material.color.getHex() !== 0x050505) { 
-                const hex = mesh.material.color.getHex();
-                colorCounts[hex]++; 
-                pieceColors.push(hex);
-            }
-        });
-        for (let pair of oppositePairs) {
-            if (pieceColors.includes(pair[0]) && pieceColors.includes(pair[1])) {
-                pieceError = `❌ İMKANSIZ PARÇA TESPİT EDİLDİ!\n\nBir küp parçasının üzerinde aynı anda hem ${colorNames[pair[0]]} hem de ${colorNames[pair[1]]} olamaz.`;
-            }
-        }
-    });
-    if (pieceError) { alert(pieceError); return; }
-
-    let isValidCount = true;
-    for (let hex in colorCounts) {
-        if (colorCounts[hex] !== 9) isValidCount = false;
-    }
-    if (!isValidCount) { alert("❌ İMKANSIZ KÜP DİZİLİMİ!\n\nGerçek bir Rubik küpünde her renkten tam 9 tane olmalıdır."); return; }
-
     shiftCameraUp();
-
     const loadingScreen = document.getElementById('loading-screen');
     loadingScreen.classList.remove('hidden-panel');
-    
     await new Promise(r => setTimeout(r, 100));
 
     try {
+        const colorCounts = { 0xffffff: 0, 0xffff00: 0, 0x00ff00: 0, 0x0000ff: 0, 0xff0000: 0, 0xffa500: 0 };
+        cubeGroup.children.forEach(pieceGroup => {
+            pieceGroup.children.forEach(mesh => {
+                if (mesh.material && mesh.material.color.getHex() !== 0x050505) { 
+                    colorCounts[mesh.material.color.getHex()]++; 
+                }
+            });
+        });
+        for (let hex in colorCounts) {
+            if (colorCounts[hex] !== 9) throw new Error("İmkansız Küp! Renkleri eksik veya fazla girdiniz.");
+        }
+
+        // SABİT KAMERALARLA 54 KAREYİ OKUMA
         const scanOrder = [
             ...[-1,0,1].flatMap(z => [-1,0,1].map(x => ({ o: [x, 3, z], d: [0, -1, 0] }))),
             ...[1,0,-1].flatMap(y => [1,0,-1].map(z => ({ o: [3, y, z], d: [-1, 0, 0] }))),
@@ -399,10 +394,7 @@ window.scanCube = async () => {
             }
         }
 
-        // MANYETİK KİLİT KONTROLÜ: Lazerler 54 renk okudu mu?
-        if (scannedColors.length !== 54) {
-            throw new Error(`Tarama Hatası! Lazerler sadece ${scannedColors.length}/54 renk okuyabildi. Lütfen sayfayı yenileyin.`);
-        }
+        if (scannedColors.length !== 54) throw new Error("Tarama Hatası!");
 
         const centerColors = {
             [scannedColors[4]]: 'U', [scannedColors[13]]: 'R', [scannedColors[22]]: 'F',
@@ -412,16 +404,12 @@ window.scanCube = async () => {
 
         if (!window.kociembaInitialized) {
             document.getElementById('loading-title').innerText = "YAPAY ZEKA UYANDIRILIYOR";
-            document.getElementById('loading-desc').innerText = "İlk hesaplama 3-4 saniye sürebilir, sayfa donabilir, lütfen bekle...";
             await new Promise(r => setTimeout(r, 100)); 
-            
             Cube.initSolver(); 
             window.kociembaInitialized = true;
         }
 
         document.getElementById('loading-title').innerText = "GERÇEK AI ANALİZ EDİYOR";
-        document.getElementById('loading-desc').innerText = "Dünya rekoru Kociemba algoritması çalışıyor...";
-
         const cube = Cube.fromString(kociembaString);
         const solveString = cube.solve(); 
 
@@ -429,7 +417,8 @@ window.scanCube = async () => {
             throw new Error("Parity (Çözülemez Fiziksel Dizilim)");
         }
 
-        if (solveString === "") {
+        const cleanSolve = solveString.trim();
+        if (cleanSolve === "" || cleanSolve === "U U'" || cleanSolve === "U' U") {
             loadingScreen.classList.add('hidden-panel');
             shiftCameraCenter();
             alert("✅ Harika! Küp zaten tamamen çözülmüş durumda.");
@@ -441,8 +430,8 @@ window.scanCube = async () => {
     } catch (e) {
         loadingScreen.classList.add('hidden-panel');
         shiftCameraCenter();
-        console.error("HATA DETAYI:", e); // Geliştirici konsolu için
-        alert(`❌ SİSTEM HATASI!\n\n${e.message}\n\nGerçek küpünün renklerini yanlış girmiş olabilirsin. Sıfırlayıp tekrar dene!`);
+        console.error("HATA DETAYI:", e); 
+        alert(`❌ SİSTEM HATASI!\n\n${e.message}`);
         return;
     }
 
@@ -456,12 +445,16 @@ function renderSolutionMoves() {
     const container = document.getElementById('solution-moves');
     container.innerHTML = '';
     
+    // JS üzerinden HTML'i düzenliyoruz: Yanlardan boşluk (px-8) ve sabit yükseklik eklendi.
+    container.className = "flex flex-wrap justify-center content-start gap-2 mb-4 px-8 h-[100px] overflow-y-auto";
+    
     window.currentSolution.forEach((move, index) => {
         const displayMove = move.replace('_PRIME', "'");
         const btn = document.createElement('button');
         btn.innerText = displayMove;
         
-        btn.className = `px-2 py-1 rounded text-xs font-bold transition-all ${index === 0 ? 'bg-orange-500 text-black scale-110 shadow-[0_0_10px_rgba(255,165,0,0.8)]' : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'}`;
+        // DİKKAT: Artık scale büyümüyor, boyut w-10 h-8 olarak SABİTLENDİ.
+        btn.className = `w-10 h-8 flex items-center justify-center rounded text-xs font-bold transition-all ${index === 0 ? 'bg-orange-500 text-black shadow-[0_0_15px_rgba(255,165,0,0.9)] border border-orange-300' : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'}`;
         
         btn.onclick = () => window.goToState(index);
         container.appendChild(btn);
@@ -472,34 +465,31 @@ function highlightMove(index) {
     const buttons = document.querySelectorAll('#solution-moves button');
     buttons.forEach((btn, i) => {
         if (i === index) {
-            btn.className = 'px-3 py-1.5 rounded text-sm font-bold transition-all bg-orange-500 text-black scale-110 shadow-[0_0_10px_rgba(255,165,0,0.8)] z-10';
+            // Aktif olan parlar ama BOYUTU DEĞİŞMEZ (Sekme önlendi)
+            btn.className = 'w-10 h-8 flex items-center justify-center rounded text-xs font-bold transition-all bg-orange-500 text-black shadow-[0_0_15px_rgba(255,165,0,0.9)] border border-orange-300 z-10';
         } else if (i < index) {
-            btn.className = 'px-2 py-1 rounded text-xs font-bold transition-all bg-green-900/40 text-green-400'; 
+            btn.className = 'w-10 h-8 flex items-center justify-center rounded text-xs font-bold transition-all bg-green-900/40 text-green-400'; 
         } else {
-            btn.className = 'px-2 py-1 rounded text-xs font-bold transition-all bg-zinc-800 text-zinc-400 hover:bg-zinc-700'; 
+            btn.className = 'w-10 h-8 flex items-center justify-center rounded text-xs font-bold transition-all bg-zinc-800 text-zinc-400 hover:bg-zinc-700'; 
         }
     });
 }
-
 window.goToState = async (targetIndex) => {
     window.isSolutionPlaying = false; 
-    
     if (targetIndex > window.currentMoveIndex) {
         for(let i = window.currentMoveIndex; i < targetIndex; i++) {
-            await window.rotateLayer(window.currentSolution[i], false, 0); 
+            // isAbsolute = true gönderiyoruz!
+            await window.rotateLayer(window.currentSolution[i], false, 0, true); 
         }
     } 
     else if (targetIndex < window.currentMoveIndex) {
         for(let i = window.currentMoveIndex - 1; i >= targetIndex; i--) {
             let move = window.currentSolution[i];
             let inverseMove = move;
-            if (!move.includes('2')) {
-                inverseMove = move.includes('PRIME') ? move.replace('_PRIME', '') : move + '_PRIME';
-            }
-            await window.rotateLayer(inverseMove, false, 0); 
+            if (!move.includes('2')) inverseMove = move.includes('PRIME') ? move.replace('_PRIME', '') : move + '_PRIME';
+            await window.rotateLayer(inverseMove, false, 0, true); 
         }
     }
-    
     window.currentMoveIndex = targetIndex;
     highlightMove(targetIndex);
 };
@@ -518,38 +508,33 @@ window.setSpeed = (speed) => {
 
 window.playSolution = async () => {
     if (window.isSolutionPlaying) return;
-    
     if (window.currentMoveIndex >= window.currentSolution.length) {
         await window.goToState(0);
         await new Promise(r => setTimeout(r, 500)); 
     }
-
     window.isSolutionPlaying = true;
-    
     while (window.currentMoveIndex < window.currentSolution.length && window.isSolutionPlaying) {
         highlightMove(window.currentMoveIndex);
         let move = window.currentSolution[window.currentMoveIndex];
-        
-        await window.rotateLayer(move, false, window.playbackSpeed.moveDuration); 
+        // isAbsolute = true gönderiyoruz!
+        await window.rotateLayer(move, false, window.playbackSpeed.moveDuration, true); 
         await new Promise(r => setTimeout(r, window.playbackSpeed.delay)); 
-        
         window.currentMoveIndex++;
     }
-    
     window.isSolutionPlaying = false;
     highlightMove(window.currentMoveIndex); 
 };
 
-window.pauseSolution = () => {
-    window.isSolutionPlaying = false;
-};
-
+window.pauseSolution = () => { window.isSolutionPlaying = false; };
 window.closeSolution = () => {
     document.getElementById('solution-panel').classList.add('hidden-panel');
     window.isSolutionPlaying = false;
     shiftCameraCenter(); 
 };
 
+// ==========================================
+// 🖱️ FARE ETKİLEŞİMLERİ (BOYAMA VE ÇEVİRME)
+// ==========================================
 let selectedColor = '#ffffff';
 window.setSelectedColor = (c, b) => {
     selectedColor = c;
@@ -620,6 +605,7 @@ window.addEventListener('mouseup', async (e) => {
 
         if (activePieces.length > 0) {
             isAnimating = true;
+            // FAREYLE ÇEVİRME GERİ GELDİ!
             await animateRotation(activePieces, rotAxis, angle, 300, true);
             isAnimating = false;
         }
@@ -631,7 +617,14 @@ window.addEventListener('mouseup', async (e) => {
         const hits = raycaster.intersectObjects(cubeGroup.children, true);
         if(hits.length > 0) {
             const clickedObj = hits[0].object;
-            if (clickedObj.material.color.getHex() !== 0x050505) {
+            const piece = clickedObj.parent;
+            
+            const pos = piece.position;
+            const isCenter = (Math.round(Math.abs(pos.x)) + Math.round(Math.abs(pos.y)) + Math.round(Math.abs(pos.z))) === 1;
+
+            if (isCenter) {
+                console.log("Merkez rengi değiştiremezsin!");
+            } else if (clickedObj.material.color.getHex() !== 0x050505) {
                 clickedObj.material.color.set(selectedColor);
             }
         }
@@ -640,4 +633,19 @@ window.addEventListener('mouseup', async (e) => {
 
 function animate() { requestAnimationFrame(animate); TWEEN.update(); controls.update(); renderer.render(scene, camera); }
 animate();
-window.addEventListener('resize', () => { camera.aspect = window.innerWidth/window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); });
+window.addEventListener('resize', () => {
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
+    camera.aspect = width / height;
+    
+    // MOBİL İÇİN ÖZEL: Eğer ekran dikeyse (telefon), kamerayı biraz uzaklaştır
+    if (width < height) {
+        camera.fov = 85; // Daha geniş açı
+    } else {
+        camera.fov = 75; // Standart açı
+    }
+
+    camera.updateProjectionMatrix();
+    renderer.setSize(width, height);
+});
