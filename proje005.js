@@ -634,6 +634,40 @@ window.addEventListener('mouseup', async (e) => {
     }
 });
 
+// ==========================================
+// 📱 MOBİL DOKUNMATİK DESTEĞİ (TOUCH EVENTS)
+// ==========================================
+
+window.addEventListener('touchstart', (e) => {
+    // Eğer tıklanan yer bir buton değilse (yani sadece canvas üzerindeysek)
+    if (e.target.tagName !== 'CANVAS' || isAnimating) return;
+    
+    const touch = e.touches[0];
+    // MouseDown olayını simüle ediyoruz
+    const mouseEvent = new MouseEvent("mousedown", {
+        clientX: touch.clientX,
+        clientY: touch.clientY
+    });
+    window.dispatchEvent(mouseEvent);
+}, { passive: false });
+
+window.addEventListener('touchmove', (e) => {
+    // Sayfanın aşağı kaymasını engelle (sadece küp dönsün)
+    if (e.target.tagName === 'CANVAS') e.preventDefault();
+}, { passive: false });
+
+window.addEventListener('touchend', (e) => {
+    if (isSwiping) {
+        const touch = e.changedTouches[0];
+        // MouseUp olayını simüle ediyoruz
+        const mouseEvent = new MouseEvent("mouseup", {
+            clientX: touch.clientX,
+            clientY: touch.clientY
+        });
+        window.dispatchEvent(mouseEvent);
+    }
+}, { passive: false });
+
 function animate() { requestAnimationFrame(animate); TWEEN.update(); controls.update(); renderer.render(scene, camera); }
 animate();
 window.addEventListener('resize', () => {
