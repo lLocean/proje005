@@ -4,6 +4,9 @@ import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.j
 import * as TWEEN from '@tweenjs/tween.js';
 import Cube from 'https://cdn.skypack.dev/cubejs';
 
+const turnSound = new Audio('https://gfxsounds.com/wp-content/uploads/2021/03/Rubiks-cube-rotating-solving-2.mp3');
+turnSound.volume = 0.5;
+
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x0a0a0a);
 
@@ -210,53 +213,40 @@ function animateRotation(piecesArray, axisStr, angle, duration = 300, recordStat
 
 // KRİTİK DÜZELTME: isAbsolute parametresi eklendi. AI için mutlak, kullanıcı için kameraya göre yön bulur.
 function getMoveData(move, isAbsolute = false) {
-    const isPrime = move.includes('PRIME');
-    const isDouble = move.includes('2'); 
+    const isPrime = move.includes('PRIME'), isDouble = move.includes('2');
     const type = move.replace('_PRIME', '').replace('2', '');
+    let axis, pos;
 
-    let camFront, camUp, camRight;
-    
     if (isAbsolute) {
-        // AI ÇÖZÜCÜSÜ İÇİN SABİT YÖNLER (Kameranın nerede olduğu önemsizdir)
-        camFront = new THREE.Vector3(0, 0, 1); // Ön her zaman +Z
-        camUp = new THREE.Vector3(0, 1, 0);    // Üst her zaman +Y
-        camRight = new THREE.Vector3(1, 0, 0); // Sağ her zaman +X
+        // AI ve Karıştırma için SABİT eksenler
+        const absMap = { 'U':{a:'y',d:1}, 'D':{a:'y',d:-1}, 'R':{a:'x',d:1}, 'L':{a:'x',d:-1}, 'F':{a:'z',d:1}, 'B':{a:'z',d:-1} };
+        axis = absMap[type].a; pos = absMap[type].d;
     } else {
-        // KULLANICI İÇİN KAMERAYA GÖRE YÖNLER
-        camFront = new THREE.Vector3(0,0,-1).applyQuaternion(camera.quaternion).negate().normalize();
-        camUp = new THREE.Vector3(0,1,0).applyQuaternion(camera.quaternion).normalize();
-        camRight = new THREE.Vector3().crossVectors(camUp, camFront).normalize();
+        // KULLANICI İÇİN: Kameranın o anki bakışına göre en yakın ekseni bul
+        const camFront = new THREE.Vector3(0,0,-1).applyQuaternion(camera.quaternion).negate().normalize();
+        const camUp = new THREE.Vector3(0,1,0).applyQuaternion(camera.quaternion).normalize();
+        const camRight = new THREE.Vector3().crossVectors(camUp, camFront).normalize();
+
+        const getNearestAxis = (v) => {
+            const ax = Math.abs(v.x), ay = Math.abs(v.y), az = Math.abs(v.z);
+            if (ax > ay && ax > az) return { a: 'x', d: Math.sign(v.x) };
+            if (ay > ax && ay > az) return { a: 'y', d: Math.sign(v.y) };
+            return { a: 'z', d: Math.sign(v.z) };
+        };
+
+        const map = {
+            'F': getNearestAxis(camFront), 'B': { a: getNearestAxis(camFront).a, d: -getNearestAxis(camFront).d },
+            'U': getNearestAxis(camUp), 'D': { a: getNearestAxis(camUp).a, d: -getNearestAxis(camUp).d },
+            'R': getNearestAxis(camRight), 'L': { a: getNearestAxis(camRight).a, d: -getNearestAxis(camRight).d }
+        };
+        axis = map[type].a; pos = map[type].d;
     }
 
-    function getAxisAndDir(vec) {
-        const ax = Math.abs(vec.x), ay = Math.abs(vec.y), az = Math.abs(vec.z);
-        if (ax > ay && ax > az) return { axis: 'x', dir: Math.sign(vec.x) };
-        if (ay > ax && ay > az) return { axis: 'y', dir: Math.sign(vec.y) };
-        return { axis: 'z', dir: Math.sign(vec.z) };
-    }
-
-    const map = {
-        'F': getAxisAndDir(camFront),
-        'B': { axis: getAxisAndDir(camFront).axis, dir: -getAxisAndDir(camFront).dir },
-        'U': getAxisAndDir(camUp),
-        'D': { axis: getAxisAndDir(camUp).axis, dir: -getAxisAndDir(camUp).dir },
-        'R': getAxisAndDir(camRight),
-        'L': { axis: getAxisAndDir(camRight).axis, dir: -getAxisAndDir(camRight).dir }
-    };
-
-    const target = map[type];
-    const axis = target.axis;
-    const pos = target.dir; 
-
-    let angle = (pos === 1) ? -Math.PI / 2 : Math.PI / 2;
-    if (isPrime) angle *= -1;
-    if (isDouble) angle *= 2; 
+    let angle = (pos === 1) ? -Math.PI/2 : Math.PI/2;
+    if (isPrime) angle *= -1; if (isDouble) angle *= 2;
 
     const activePieces = [];
-    cubeGroup.children.forEach(piece => {
-        if (Math.round(piece.position[axis]) === pos) activePieces.push(piece);
-    });
-
+    cubeGroup.children.forEach(p => { if (Math.round(p.position[axis]) === pos) activePieces.push(p); });
     return { activePieces, axis, angle };
 }
 
@@ -656,7 +646,13 @@ window.addEventListener('touchmove', (e) => {
     if (e.target.tagName === 'CANVAS') e.preventDefault();
 }, { passive: false });
 
-
+window.addEventListener('touchstart', (e) => {
+    if (e.target.tagName !== 'CANVAS' || isAnimating) return;
+    const t = e.touches[0];
+    isSwiping = true;
+    swipeStartPos = { x: t.clientX, y: t.clientY };
+    // Mousedown simülasyonu için gerekli tetiklemeler buraya...
+}, { passive: false });
 
 function animate() { requestAnimationFrame(animate); TWEEN.update(); controls.update(); renderer.render(scene, camera); }
 animate();
