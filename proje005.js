@@ -656,17 +656,7 @@ window.addEventListener('touchmove', (e) => {
     if (e.target.tagName === 'CANVAS') e.preventDefault();
 }, { passive: false });
 
-window.addEventListener('touchend', (e) => {
-    if (isSwiping) {
-        const touch = e.changedTouches[0];
-        // MouseUp olayını simüle ediyoruz
-        const mouseEvent = new MouseEvent("mouseup", {
-            clientX: touch.clientX,
-            clientY: touch.clientY
-        });
-        window.dispatchEvent(mouseEvent);
-    }
-}, { passive: false });
+
 
 function animate() { requestAnimationFrame(animate); TWEEN.update(); controls.update(); renderer.render(scene, camera); }
 animate();
